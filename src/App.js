@@ -1,24 +1,26 @@
-import logo from './logo.svg';
-import './App.css';
-
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Model from "./pages/models/Model";
+import Advertising from './pages/models/Advertising'
+import LinearRegPred from "./pages/models/LinearRegPred";
+import ModelUpload from "./pages/models/ModelUpload";
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Navbar/>
+      <Routes>
+        <Route path="/" element={<Home/>}/>
+        <Route path="/about" element={<About/>}/>
+        <Route path="/contact" element={<Contact/>}/>
+        <Route path="/models" element={<Model/>}/>
+        <Route path="/models/advertising" element={<Advertising/>}/>
+        <Route path="/models/linearPrediction" element={<LinearRegPred/>}/>
+        <Route path="/models/modelUpload" element={<ModelUpload/>}/>
+      </Routes>
+    </BrowserRouter>
   );
 }
 

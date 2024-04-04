@@ -1,0 +1,19 @@
+/* Slider container */
+.slider-container {
+  position: relative;
+  width: 200px; /* Adjust width as needed */
+}
+
+/* Tooltip */
+.tooltip {
+  position: absolute;
+  top: -30px; /* Adjust top position */
+  left: 50%; /* Center the tooltip horizontally */
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  white-space: nowrap;
+}
