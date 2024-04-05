@@ -8,6 +8,7 @@ import Advertising from "./pages/models/Advertising";
 import LinearRegPred from "./pages/models/LinearRegPred";
 import PickleUploadForm from "./pages/models/uploadModels";
 import DisplayModels from "./pages/models/DisplayModels";
+import UserChart from "./components/chartUser";
 function App() {
   return (
     <BrowserRouter>
@@ -20,7 +21,9 @@ function App() {
         <Route path="/models/advertising" element={<Advertising />} />
         <Route path="/models/linearPrediction" element={<LinearRegPred />} />
         <Route path="/models/modelUpload" element={<PickleUploadForm />} />
-        <Route path="/models/displayModels" element={<DisplayModels/>}/>
+        <Route path="/models/displayModels" element={<DisplayModels />} />
+        <Route path="/models/addModels" element={<PickleUploadForm />} />
+        <Route path="/models/userChart" element={<UserChart />} />
       </Routes>
     </BrowserRouter>
   );

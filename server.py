@@ -14,7 +14,7 @@ from bson import json_util
 
 app = Flask(__name__)
 CORS(app)   
-MONGO_URI = "mongodb+srv://douma:douma@ecommerce.vxwlj.mongodb.net/"
+MONGO_URI = "mongodb://localhost:27017/"
 DATABASE_NAME = "input_fields"
 
 UPLOAD_FOLDER = 'uploads'  # Define an upload folder
@@ -121,6 +121,7 @@ def fileSaver():
 def upload_pickle():
     
     if 'pickleFile' not in request.files:
+        print(1)
         return jsonify({'error': 'No pickle file uploaded'}), 404
 
     pickle_file = request.files['pickleFile']
@@ -130,6 +131,7 @@ def upload_pickle():
     print(pickle_file.mimetype)
 
     if pickle_file.filename == '':
+        print(2)
         return jsonify({'error': 'No selected file'}), 404
 
     # if not pickle_file.mimetype.endswith('pkl'):
@@ -151,6 +153,7 @@ def upload_pickle():
             "inputs": inputs,
             "time" : time.time(),
         }
+        print(data)
         collection.insert_one(data)
         client.close()
         pickle_file.save(saved_path)
@@ -163,6 +166,7 @@ def upload_pickle():
 
         return jsonify({'message': 'Pickle file uploaded successfully!'}), 200
     except Exception as e:
+        print(3)
         return jsonify({'error': f"Error uploading file: {str(e)}"}), 500
 
 @app.route('/getModels', methods=['GET'])
