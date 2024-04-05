@@ -1,9 +1,10 @@
 import React, { useState } from "react";
+import GraphData from "./chartDisplay";
 
 const PickleUploadForm = () => {
   const [modelName, setModelName] = useState("");
   const [inputs, setInputs] = useState([{ name: "", range: [0, 0] }]);
-
+  const [graphData, setGraphData] = useState(null);
   const handleAddInput = () => {
     setInputs([...inputs, { name: "", range: [0, 0] }]);
   };
@@ -51,67 +52,76 @@ const PickleUploadForm = () => {
   const [pickleFile, setPickleFile] = useState(null);
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginTop: "100px" }}>
-      <div>
-        <label htmlFor="modelName">Model Name:</label>
-        <input
-          type="text"
-          id="modelName"
-          name="modelName"
-          value={modelName}
-          onChange={(event) => setModelName(event.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <h2>Input Fields</h2>
-        {inputs.map((input, index) => (
-          <div key={index}>
-            <label htmlFor={`inputName-${index}`}>Input Name:</label>
-            <input
-              type="text"
-              id={`inputName-${index}`}
-              name="name"
-              value={input.name}
-              onChange={(event) => handleInputChange(event, index)}
-              required
-            />
-            <label htmlFor={`inputMin-${index}`}>Min Range:</label>
-            <input
-              type="number"
-              id={`inputMin-${index}`}
-              name="min"
-              value={input.range[0]}
-              onChange={(event) => handleInputChange(event, index)}
-              required
-            />
-            <label htmlFor={`inputMax-${index}`}>Max Range:</label>
-            <input
-              type="number"
-              id={`inputMax-${index}`}
-              name="max"
-              value={input.range[1]}
-              onChange={(event) => handleInputChange(event, index)}
-              required
-            />
-          </div>
-        ))}
-        <button type="button" onClick={handleAddInput}>
-          Add Input Field
-        </button>
-      </div>
-      <div>
-        <label htmlFor="pickleFile">Pickle File:</label>
-        <input
-          type="file"
-          id="pickleFile"
-          name="pickleFile"
-          accept=".pkl"
-          onChange={(event) => setPickleFile(event.target.files[0])}
-        />
-      </div>
-      <button type="submit">Upload Pickle</button>
-    </form>
+    <div>
+      <form onSubmit={handleSubmit} style={{ marginTop: "100px" }}>
+        <div>
+          <label htmlFor="modelName">Model Name:</label>
+          <input
+            type="text"
+            id="modelName"
+            name="modelName"
+            value={modelName}
+            onChange={(event) => setModelName(event.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <h2>Input Fields</h2>
+          {inputs.map((input, index) => (
+            <div key={index}>
+              <label htmlFor={`inputName-${index}`}>Input Name:</label>
+              <input
+                type="text"
+                id={`inputName-${index}`}
+                name="name"
+                value={input.name}
+                onChange={(event) => handleInputChange(event, index)}
+                required
+              />
+              <label htmlFor={`inputMin-${index}`}>Min Range:</label>
+              <input
+                type="number"
+                id={`inputMin-${index}`}
+                name="min"
+                value={input.range[0]}
+                onChange={(event) => handleInputChange(event, index)}
+                required
+              />
+              <label htmlFor={`inputMax-${index}`}>Max Range:</label>
+              <input
+                type="number"
+                id={`inputMax-${index}`}
+                name="max"
+                value={input.range[1]}
+                onChange={(event) => handleInputChange(event, index)}
+                required
+              />
+            </div>
+          ))}
+          <button type="button" onClick={handleAddInput}>
+            Add Input Field
+          </button>
+        </div>
+        <div>
+          <label htmlFor="pickleFile">Pickle File:</label>
+          <input
+            type="file"
+            id="pickleFile"
+            name="pickleFile"
+            accept=".pkl"
+            onChange={(event) => setPickleFile(event.target.files[0])}
+          />
+        </div>
+        <button type="submit">Upload Pickle</button>
+      </form>
+      {graphData === null ? (
+        <div style={{ color: "red" }}>
+          Upload the model or wait for response to come
+        </div>
+      ) : (
+        <GraphData data={graphData} />
+      )}
+    </div>
   );
 };
 
