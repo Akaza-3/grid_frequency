@@ -14,6 +14,9 @@ const Model = () => {
         <li>
           <Link to="/models/modelUpload">See graph of user generated pickle model</Link>
         </li>
+        <li>
+          <Link to="/models/displayModels">See all the stored models in db</Link>
+        </li>
     </ul>
         
     </div>

@@ -14,7 +14,7 @@ from bson import json_util
 
 app = Flask(__name__)
 CORS(app)   
-MONGO_URI = "mongodb://localhost:27017/"
+MONGO_URI = "mongodb+srv://douma:douma@ecommerce.vxwlj.mongodb.net/"
 DATABASE_NAME = "input_fields"
 
 UPLOAD_FOLDER = 'uploads'  # Define an upload folder
@@ -22,8 +22,10 @@ UPLOAD_FOLDER = 'uploads'  # Define an upload folder
 # Create the upload folder if it doesn't exist
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
+
+
 #database connection
-client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient("mongodb+srv://douma:douma@ecommerce.vxwlj.mongodb.net/")
 db = client.userModels
 userFiles = db.userFiles
 
@@ -124,7 +126,7 @@ def upload_pickle():
     pickle_file = request.files['pickleFile']
     title = request.form.get('title')
     description = request.form.get('description')
-
+    file_content = pickle_file.read()
     print(pickle_file.mimetype)
 
     if pickle_file.filename == '':
@@ -145,7 +147,9 @@ def upload_pickle():
         collection = db["models"]
         data = {
             "modelName": model_name,
-            "inputs": inputs
+            "pickleFile": file_content,
+            "inputs": inputs,
+            "time" : time.time(),
         }
         collection.insert_one(data)
         client.close()
@@ -166,14 +170,14 @@ def get_models():
       client = MongoClient(MONGO_URI)
       db = client[DATABASE_NAME]
       collection = db["models"]
-      models = list(collection.find({}, {"modelName": 1, "_id": 0}))
+      models = list(collection.find({}, {"modelName": 1, "time":1, "_id": 0}))
       client.close()
       print(models)
       return jsonify({'models': models})
 
 @app.route('/userModel', methods=['GET'])
 def getUserUploadModel():
-    req_data = request.json
+    req_data = request.json 
     model_name = req_data.get('modelName')
     db = client[DATABASE_NAME]
     collection = db["models"]
