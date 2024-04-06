@@ -16,7 +16,7 @@ app = Flask(__name__)
 CORS(app)   
 MONGO_URI = "mongodb://localhost:27017/"
 DATABASE_NAME = "input_fields"
-
+COLLECTION = "models"
 UPLOAD_FOLDER = 'uploads'  # Define an upload folder
 
 # Create the upload folder if it doesn't exist
@@ -179,16 +179,49 @@ def get_models():
       print(models)
       return jsonify({'models': models})
 
-@app.route('/userModel', methods=['GET'])
-def getUserUploadModel():
-    req_data = request.json 
-    model_name = req_data.get('modelName')
-    db = client[DATABASE_NAME]
-    collection = db["models"]
-    if model_name:
-        query = {"modelName":model_name}
-        result = collection.find_one(query)
+# @app.route('/userModel', methods=['GET'])
+# def getUserUploadModel():
+#     req_data = request.json 
+#     model_name = req_data.get('modelName')
+#     db = client[DATABASE_NAME]
+#     collection = db[COLLECTION]
+#     if model_name:
+#         query = {"modelName":model_name}
+#         result = collection.find_one(query)
+#         if result:
+#             inputs = result.get('inputs')
+#             input_for_model = {}
+#             print(inputs)
+#             for input in inputs:
+#                 name = input['name']
+#                 value = random.uniform(input['range'][0], input['range'][1])
+#                 input_for_model[name]=value
+#             print(input_for_model)
+#             input_df = pd.DataFrame(input_for_model, index=[0])
+#             model_file_name = model_name + '.pkl'
+#             model1 = pickle.load(open(model_file_name, 'rb'))
+#             prediction = model1.predict(input_df)
+#             print(prediction[0])
+#             return jsonify({'prediction': prediction[0], 'inputs': input_for_model})
+#         else:
+#             return {jsonify({'error':'input fields for model not found'})}
+
+
+def load_model(pickle_data):
+    return pickle.loads(pickle_data)
+
+@app.route('/getUserModelPrediction', methods=['GET'])
+def get_user_model_prediction():
+    modelName = request.args.get('modelName')
+    print("Model Name:", modelName)
+    try:
+        client = MongoClient(MONGO_URI)
+        db = client[DATABASE_NAME]
+        collection = db[COLLECTION]
+        result = collection.find_one({'modelName': modelName})
         if result:
+            pickle_data = result.get('pickleFile')
+            model = load_model(pickle_data)
             inputs = result.get('inputs')
             input_for_model = {}
             print(inputs)
@@ -198,13 +231,15 @@ def getUserUploadModel():
                 input_for_model[name]=value
             print(input_for_model)
             input_df = pd.DataFrame(input_for_model, index=[0])
-            model_file_name = model_name + '.pkl'
-            model1 = pickle.load(open(model_file_name, 'rb'))
-            prediction = model1.predict(input_df)
+            prediction = model.predict(input_df)
             print(prediction[0])
             return jsonify({'prediction': prediction[0], 'inputs': input_for_model})
         else:
-            return {jsonify({'error':'input fields for model not found'})}
+            return jsonify({'error':"Pickle File not found in db"}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 
 if(__name__) == '__main__':
     app.run(debug=True)
