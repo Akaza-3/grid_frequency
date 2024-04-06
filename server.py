@@ -1,3 +1,4 @@
+import requests
 import json
 import pickle
 import time
@@ -11,6 +12,13 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 import random
 from bson import json_util
+from keras.models import model_from_json
+import requests
+from bs4 import BeautifulSoup
+import re
+
+
+
 
 app = Flask(__name__)
 CORS(app)   
@@ -229,17 +237,23 @@ def get_user_model_prediction():
                 name = input['name']
                 value = random.uniform(input['range'][0], input['range'][1])
                 input_for_model[name]=value
+            print("\n\n\n\n\n\n FOR MODEL")
             print(input_for_model)
             input_df = pd.DataFrame(input_for_model, index=[0])
             prediction = model.predict(input_df)
-            print(prediction[0])
-            return jsonify({'prediction': prediction[0], 'inputs': input_for_model})
+            # print(type(prediction[0]))
+            if type(prediction[0]) == np.ndarray:
+                prediction_value = prediction[0]
+            else:
+                prediction_value = prediction
+            print(prediction_value[0])
+            return jsonify({'prediction': prediction_value[0], 'inputs': input_for_model})
         else:
             return jsonify({'error':"Pickle File not found in db"}), 404
     except Exception as e:
+        print(str(e))
         return jsonify({'error': str(e)}), 500
 
-
-
+        
 if(__name__) == '__main__':
     app.run(debug=True)
