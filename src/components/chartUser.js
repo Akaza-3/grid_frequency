@@ -2,40 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Line } from "react-chartjs-2";
 import { Chart } from "react-google-charts";
-
+import axios from 'axios'
 const UserChart = () => {
   const location = useLocation();
   const modelName = location.state.modelName;
   const [prediction, setPrediction] = useState(null);
   const [graphData, setGraphData] = useState([["time", "value"]]);
+  const [info, setInfo] = useState(null)
 
-  // const options = {
-  //   scales: {
-  //     x: {
-  //       ticks: {
-  //         color: "#ffffff", // x-axis labels color
-  //       },
-  //     },
-  //     y: {
-  //       ticks: {
-  //         color: "#ffffff", // y-axis labels color
-  //       },
-  //     },
-  //   },
-  // };
-  // const [data, setData] = useState({
-  //   labels: [],
-  //   datasets: [
-  //     {
-  //       label: "Real-Time Data",
-  //       data: [],
-  //       fill: false,
-  //       borderColor: "rgb(0, 151, 67)",
-  //       tension: 0.1,
-  //     },
-  //   ],
-  // });
-  // Function to fetch user model prediction
   const fetchUserModelPrediction = async () => {
     try {
       const response = await fetch(
@@ -43,31 +17,19 @@ const UserChart = () => {
           modelName
         )}`
       );
-
       if (response.ok) {
         const data = await response.json();
+        setInfo(data.ranges)
         setPrediction(data.prediction);
         const newData = data.prediction;
-        const now = Date.now();
+        const now = new Date();
 
-        setGraphData((prevData) => [...prevData, [now, newData]]);
+        const hour = now.getHours();
+        const minutes = now.getMinutes();
+        const seconds = now.getSeconds();
 
-        // let newLabels = [];
-        // if (Array.isArray(data.labels)) {
-        //   newLabels = [...data.labels, now];
-        // } else {
-        //   newLabels = [now]; // or handle it in a way that suits your application
-        // }
-        // const newDataPoints = [...data.datasets[0].data, newData];
-        // setData({
-        //   labels: newLabels,
-        //   datasets: [
-        //     {
-        //       ...data.datasets[0],
-        //       data: newDataPoints,
-        //     },
-        //   ],
-        // });
+        const formattedTime = `${hour}:${minutes}:${seconds}`;
+        setGraphData((prevData) => [...prevData, [formattedTime, newData]]);
         console.log(data);
       } else {
         console.error("Failed to fetch user model prediction");
@@ -77,26 +39,82 @@ const UserChart = () => {
     }
   };
 
-  // useEffect hook to fetch data every 20 seconds
+  const roundNumber = (number) => {
+    return number.toFixed(4);
+  }
+
   useEffect(() => {
     const intervalId = setInterval(fetchUserModelPrediction, 2000);
 
-    // Cleanup function to clear the interval when the component unmounts
     return () => clearInterval(intervalId);
-  }, [prediction, graphData]); // Empty dependency array to run the effect only once on mount
+  }, [prediction, graphData]); 
 
   return (
-    <div style={{ marginTop: "200px" }}>
-      <h1>{modelName}</h1>
+    <div className="pt-24 pl-3 bg-[#141514] text-white min-h-screen">
+    {prediction===null && (
+      <div className="animate-bounce pt-48 text-3xl grid items-center justify-center">Loading...</div>
+    )}
+      <br/>
+      <br/>
+      
       {prediction !== null && (
-        <div>
-          <h2>Prediction:</h2>
-          <p>{prediction}</p>
+        <div className="flex flex-row">
+        <div className="w-1/4 pr-5">
+          <h1 className="text-5xl font-bold">{modelName}</h1>
+          <br/>
+          <br/>
+          <br/>
+          <p className="text-2xl">Parameters and their ranges</p>
+          {info && info.map((item, index) => (
+            <div key={index} className="flex flex-row">
+              <h3 className="text-lg pr-2">{item.name} :  </h3>
+              <p className="text-lg">{item.range.join(' - ')}</p>
+            </div>
+          ))}
+      </div>
+        <div className="w-3/4">
+          <span className="flex flex-row text-xl">
+            <h2>Prediction:</h2>
+            <p className="pl-4 pb-4">{roundNumber(prediction)}</p>
+          </span>
           <Chart
-            className="h-[45vh] w-full"
+            className="h-[60vh] w-full"
             chartType="LineChart"
             data={graphData}
+            options={{
+              backgroundColor: "#141514",
+              chartArea: {
+                width: "90%",
+                height: "90%"
+              },
+              colors: ["green"],
+              legend: {
+                textStyle: {
+                  color: "white"
+                },
+                
+              },
+              hAxis: {
+                textStyle: {
+                  color: "white"
+                },
+                gridlines: {
+                  color: "transparent" 
+                },
+                
+              },
+              vAxis: {
+                textStyle: {
+                  color: "white"
+                },
+                gridlines: {
+                  color: "transparent" 
+                },
+                
+              }
+            }}
           />
+        </div>
         </div>
       )}
     </div>

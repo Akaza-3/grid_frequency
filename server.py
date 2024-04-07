@@ -22,7 +22,8 @@ import re
 
 app = Flask(__name__)
 CORS(app)   
-MONGO_URI = "mongodb://localhost:27017/"
+# MONGO_URI = "mongodb://localhost:27017/"
+MONGO_URI = "mongodb+srv://douma:douma@ecommerce.vxwlj.mongodb.net/"
 DATABASE_NAME = "input_fields"
 COLLECTION = "models"
 UPLOAD_FOLDER = 'uploads'  # Define an upload folder
@@ -30,12 +31,6 @@ UPLOAD_FOLDER = 'uploads'  # Define an upload folder
 # Create the upload folder if it doesn't exist
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
-
-
-#database connection
-client = MongoClient("mongodb+srv://douma:douma@ecommerce.vxwlj.mongodb.net/")
-db = client.userModels
-userFiles = db.userFiles
 
 
 #pickle model
@@ -106,24 +101,6 @@ def predict1():
     print(prediction[0])
     return jsonify({'prediction': prediction[0]})
 
-
-@app.route('/fileSave', methods=['POST'])
-def fileSaver():
-    print("filesave url hit")
-    
-    if 'file' not in request.files:
-        return "No file selected"
-    
-    file = request.files['file']    
-    file_content = file.read()
-    
-    info = userFiles.insert_one({
-        'file_content': file_content,
-        'name': file.filename,
-        'created_time': time.time()
-    })
-    
-    return "File saved successfully"
 
 @app.route('/uploadPickle', methods=['POST'])
 def upload_pickle():
@@ -247,12 +224,14 @@ def get_user_model_prediction():
             else:
                 prediction_value = prediction
             print(prediction_value[0])
-            return jsonify({'prediction': prediction_value[0], 'inputs': input_for_model})
+            return jsonify({'prediction': prediction_value[0], 'inputs': input_for_model, 'ranges': inputs})
         else:
             return jsonify({'error':"Pickle File not found in db"}), 404
     except Exception as e:
         print(str(e))
         return jsonify({'error': str(e)}), 500
+
+
 
         
 if(__name__) == '__main__':

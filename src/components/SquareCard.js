@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const SquareCard = ({ name, time, link = null }) => {
+  
   const date = new Date(time * 1000);
 
   const day = date.getDate().toString().padStart(2, "0");
@@ -9,14 +10,13 @@ const SquareCard = ({ name, time, link = null }) => {
   const year = date.getFullYear();
 
   const formattedDate = `${day}/${month}/${year}`;
-  const history = useNavigate();
+  const navigate = useNavigate();
 
   const graphHandler = () => {
-    history("/models/userChart", {
-      state: { modelName: name }, // Pass modelName as props using state
+    navigate("/models/userChart", {
+      state: { modelName: name }, 
     });
 
-    //enter the graph url here.... search the graph using model name passed as parameter ya phir jisse upload ke time dikha rahe usse krna?
   };
 
   return (

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import GraphData from "./chartDisplay";
 import { useNavigate } from "react-router-dom";
 
 const PickleUploadForm = () => {
@@ -127,7 +126,7 @@ const PickleUploadForm = () => {
                 value={input.range[1]}
                 onChange={(event) => handleInputChange(event, index)}
                 required
-                className="text-black w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                className="text-black first:w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
               />
             </div>
           ))}
@@ -160,13 +159,7 @@ const PickleUploadForm = () => {
           Upload Pickle
         </button>
       </form>
-      {graphData === null ? (
-        <div style={{ color: "red" }}>
-          Upload the model or wait for response to come
-        </div>
-      ) : (
-        <GraphData data={graphData} />
-      )}
+      
     </div>
   );
 };
