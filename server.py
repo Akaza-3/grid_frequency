@@ -22,8 +22,13 @@ import re
 
 app = Flask(__name__)
 CORS(app)   
-# MONGO_URI = "mongodb://localhost:27017/"
-MONGO_URI = "mongodb+srv://douma:douma@ecommerce.vxwlj.mongodb.net/"
+
+# Shreyansh's db
+MONGO_URI = "mongodb://localhost:27017/"
+
+
+# Sahil's db
+# MONGO_URI = "mongodb+srv://douma:douma@ecommerce.vxwlj.mongodb.net/"
 DATABASE_NAME = "input_fields"
 COLLECTION = "models"
 UPLOAD_FOLDER = 'uploads'  # Define an upload folder
