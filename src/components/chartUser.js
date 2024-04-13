@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Line } from "react-chartjs-2";
 import { Chart } from "react-google-charts";
-import axios from 'axios'
+
 const UserChart = () => {
   const location = useLocation();
   const modelName = location.state.modelName;
   const [prediction, setPrediction] = useState(null);
-  const [graphData, setGraphData] = useState([["time", "value"]]);
+  const [graphData, setGraphData] = useState([["Time", "Prediction", "Mean", "Standard Deviation"]]); // Initialize with header
   const [info, setInfo] = useState(null)
-
+  const [dataHolder, setDataHolder] = useState([])
+  const [histogramData, setHistogramData] = useState([["Prediction", "Value"]])
+  let sum=0
+  let size=1;
   const fetchUserModelPrediction = async () => {
     try {
       const response = await fetch(
@@ -20,16 +22,30 @@ const UserChart = () => {
       if (response.ok) {
         const data = await response.json();
         setInfo(data.ranges)
-        setPrediction(data.prediction);
+        
+        setPrediction(data.prediction); // Store prediction value directly
+
+        //storing data for standard deviation
+        setDataHolder(prevData => {
+          return [...prevData, data.prediction];
+        });
+
+        
+        //adding all the values for mean
         const newData = data.prediction;
+        sum=sum+ newData
+
+        //setting the x axis label for lineGraph
         const now = new Date();
+        const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
-        const hour = now.getHours();
-        const minutes = now.getMinutes();
-        const seconds = now.getSeconds();
+        // Calculating mean value and standard deviation
+        const meanValue = calculateMean(sum);
+        const standardDeviation = calculateDeviation(meanValue)
 
-        const formattedTime = `${hour}:${minutes}:${seconds}`;
-        setGraphData((prevData) => [...prevData, [formattedTime, newData]]);
+        // Update graph data
+        setGraphData(prevData => [...prevData, [formattedTime, newData, meanValue, standardDeviation]]);
+        
         console.log(data);
       } else {
         console.error("Failed to fetch user model prediction");
@@ -39,18 +55,34 @@ const UserChart = () => {
     }
   };
 
-  const roundNumber = (number) => {
-    return number.toFixed(4);
+  const calculateDeviation = (mean) => {
+    let total=0;
+    for(let i=0; i<dataHolder.length; i++){
+      total += Math.pow((dataHolder[i] - mean),2)
+    }
+    total = total/size;
+    total = Math.sqrt(total)
+    return total;
   }
+
+  const calculateMean = (sum) => {
+    console.log("mean function", sum)
+    return sum/(size++);
+  }
+
+  
 
   useEffect(() => {
     const intervalId = setInterval(fetchUserModelPrediction, 2000);
+    
+    const newLabel = `prediction${histogramData.length}`;
+    setHistogramData(prevData => [...prevData, [newLabel, prediction]]);
 
     return () => clearInterval(intervalId);
-  }, [prediction, graphData]); 
+  }, [dataHolder]); 
 
   return (
-    <div className="pt-24 pl-3 bg-[#141514] text-white min-h-screen">
+    <div className="pt-[80px] pl-3 bg-[#141514] text-white min-h-screen">
     {prediction===null && (
       <div className="animate-bounce pt-48 text-3xl grid items-center justify-center">Loading...</div>
     )}
@@ -73,26 +105,22 @@ const UserChart = () => {
           ))}
       </div>
         <div className="w-3/4">
-          <span className="flex flex-row text-xl">
-            <h2>Prediction:</h2>
-            <p className="pl-4 pb-4">{roundNumber(prediction)}</p>
-          </span>
           <Chart
-            className="h-[60vh] w-full"
+            className="h-1/2 pb-8 w-full"
             chartType="LineChart"
             data={graphData}
             options={{
               backgroundColor: "#141514",
               chartArea: {
                 width: "90%",
-                height: "90%"
+                height: "70%"
               },
-              colors: ["green"],
+              colors: ["green", "blue", "red"], // Prediction in green, mean in blue, standard deviation in red
               legend: {
+                position: 'bottom', 
                 textStyle: {
                   color: "white"
-                },
-                
+                }
               },
               hAxis: {
                 textStyle: {
@@ -101,7 +129,6 @@ const UserChart = () => {
                 gridlines: {
                   color: "transparent" 
                 },
-                
               },
               vAxis: {
                 textStyle: {
@@ -110,10 +137,41 @@ const UserChart = () => {
                 gridlines: {
                   color: "transparent" 
                 },
-                
               }
             }}
           />
+          <Chart
+          className="pt-24"
+  chartType="Histogram"
+  data={histogramData}
+  options={{
+    backgroundColor: "#141514",
+    chartArea: {
+      width: "90%",
+      height: "70%"
+    },
+    colors: ["white"], 
+    legend: {
+      position: 'none' 
+    },
+    hAxis: {
+      textStyle: {
+        color: "white"
+      },
+      gridlines: {
+        color: "transparent" 
+      },
+    },
+    vAxis: {
+      textStyle: {
+        color: "white"
+      },
+      gridlines: {
+        color: "transparent" 
+      },
+    }
+  }}
+/>
         </div>
         </div>
       )}

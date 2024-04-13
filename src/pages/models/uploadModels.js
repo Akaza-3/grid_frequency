@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 
 const PickleUploadForm = () => {
   const [modelName, setModelName] = useState("");
-  const [inputs, setInputs] = useState([{ name: "", range: [0, 0] }]);
+  const [inputs, setInputs] = useState([{ name: "", range: [48, 50] }]);
   const [graphData, setGraphData] = useState(null);
   const handleAddInput = () => {
-    setInputs([...inputs, { name: "", range: [0, 0] }]);
+    setInputs([...inputs, { name: "", range: [48, 50] }]);
   };
   const history = useNavigate();
 
