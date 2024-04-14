@@ -33,6 +33,9 @@ DATABASE_NAME = "input_fields"
 COLLECTION = "models"
 UPLOAD_FOLDER = 'uploads'  # Define an upload folder
 
+client = MongoClient(MONGO_URI)
+
+
 # Create the upload folder if it doesn't exist
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
@@ -134,7 +137,7 @@ def upload_pickle():
     try:
         # Connect to MongoDB
         inputs = json.loads(request.form.get('inputs'))
-        client = MongoClient(MONGO_URI)
+        # client = MongoClient(MONGO_URI)
         db = client[DATABASE_NAME]
         collection = db["models"]
         data = {
@@ -145,7 +148,6 @@ def upload_pickle():
         }
         print(data)
         collection.insert_one(data)
-        client.close()
         pickle_file.save(saved_path)
 
         # Save additional information (title, description) to a separate file (optional)
@@ -161,11 +163,9 @@ def upload_pickle():
 
 @app.route('/getModels', methods=['GET'])
 def get_models():
-      client = MongoClient(MONGO_URI)
       db = client[DATABASE_NAME]
       collection = db["models"]
       models = list(collection.find({}, {"modelName": 1, "time":1, "_id": 0}))
-      client.close()
       print(models)
       return jsonify({'models': models})
 
@@ -205,7 +205,7 @@ def get_user_model_prediction():
     modelName = request.args.get('modelName')
     print("Model Name:", modelName)
     try:
-        client = MongoClient(MONGO_URI)
+        # client = MongoClient(MONGO_URI)
         db = client[DATABASE_NAME]
         collection = db[COLLECTION]
         result = collection.find_one({'modelName': modelName})
@@ -229,7 +229,7 @@ def get_user_model_prediction():
             else:
                 prediction_value = prediction
             print(prediction_value[0])
-            return jsonify({'prediction': prediction_value[0], 'inputs': input_for_model, 'ranges': inputs})
+            return jsonify({'prediction': abs(prediction_value[0]), 'inputs': input_for_model, 'ranges': inputs})
         else:
             return jsonify({'error':"Pickle File not found in db"}), 404
     except Exception as e:
