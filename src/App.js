@@ -13,6 +13,7 @@ import PickleUploadForm from "./pages/models/uploadModels";
 import DisplayModels from "./pages/models/DisplayModels";
 import UserChart from "./components/chartUser";
 import Login from "./components/Login";
+import PyToPkl from "./pages/PyToPkl";
 // Initialize Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAEY1TAQJ9zMwWul1m7eDCWwQPgvPTKFUQ",
@@ -64,6 +65,7 @@ function App() {
             <Route path="/models/displayModels" element={<DisplayModels />} />
             <Route path="/models/addModels" element={<PickleUploadForm />} />
             <Route path="/models/userChart" element={<UserChart />} />
+            <Route path="/pytopickle"  element={<PyToPkl/>}/>
           </>
         ) : (
           <Route path="/login" element={<Login handleLogin={handleLogin} />} />

@@ -3,7 +3,7 @@ import json
 import pickle
 import time
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file, Response
 from flask_cors import CORS
 import pandas as pd
 from datetime import datetime
@@ -16,7 +16,8 @@ from keras.models import model_from_json
 import requests
 from bs4 import BeautifulSoup
 import re
-
+from io import BytesIO
+import sys
 
 
 
@@ -33,88 +34,49 @@ DATABASE_NAME = "input_fields"
 COLLECTION = "models"
 UPLOAD_FOLDER = 'uploads'  # Define an upload folder
 
-client = MongoClient(MONGO_URI)
 
 
 # Create the upload folder if it doesn't exist
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
+@app.route("/pytopickle", methods=["POST"])
+def convertFile():
+    if 'file' not in request.files:
+        print(" no file uploaded")
+    file  = request.files['file']
+    
+    pickled_model = process_file(file.read())
 
-#pickle model
-model1 = pickle.load(open('model1_linear.pkl', 'rb'))
+    if pickled_model is not None:
+        with open('itworked.pkl', 'wb') as f:
+            pickle.dump(pickled_model, f)
+        return "success!"
+    else:
+        return "not success"
 
+def process_file(data):
+    
+    namespace = {}
+    exec(data, namespace)
+    
+    # Assuming your model object is stored in a variable named 'model'
+    model = namespace.get('model')
+    print(model)
+
+    return model
+   
 
 @app.route('/') 
 def default():
     return 'hello world!'
 
 
-df = pd.read_csv('Advertising.csv')
-df = df.drop(['Unnamed: 0'], axis=1)
-x = df.drop(['Sales'], axis=1)
-y = df['Sales']
-model = LinearRegression()
-model.fit(x,y)
-
-
-@app.route('/prediction-data', methods=['GET'])
-def prediction():
-    print("url hit")
-    a = round(random.uniform(1,300 ), 1)
-    b = round(random.uniform(1,75 ), 1)
-    c = round(random.uniform(1,100 ), 1)
-    now = datetime.now()
-    now_string = now.strftime('%H:%M:%S')
-    predicted_value = model.predict([[a,b,c]])
-
-    data = {"value": round((predicted_value[0]),1), "time":now_string, "a": a, "b":b, "c":c}
-    return jsonify({'data' : json_util.dumps(data)})
-
-
-@app.route('/predict1/', methods=["GET"])
-def predict1():
-    
-    qideka = request.args.get('qideka')
-    f50deol = request.args.get('f50deol')
-    qideol = request.args.get('qideol')
-    f50pt = request.args.get('f50pt')
-    qipt = request.args.get('qipt')
-    f50tr = request.args.get('f50tr')
-    qitr = request.args.get('qitr')
-    current_datetime = datetime.now()
-    year = current_datetime.year
-    month = current_datetime.month
-    day = current_datetime.day
-    hour = current_datetime.hour
-    minute = current_datetime.minute
-    second = current_datetime.second
-    input_data = {
-        'QI_DE_KA': [qideka],
-        'f50_DE_OL': [f50deol],
-        'QI_DE_OL': [qideol],
-        'f50_PT': [f50pt],
-        'QI_PT': [qipt],
-        'f50_TR': [f50tr],
-        'QI_TR': [qitr],
-        'Year': [year],
-        'Month': [month],
-        'Day': [day],
-        'Hour': [hour],
-        'Minute': [minute],
-        'Second': [second]
-    }    
-    input_df = pd.DataFrame(input_data)
-    prediction = model1.predict(input_df)
-    print(prediction[0])
-    return jsonify({'prediction': prediction[0]})
-
 
 @app.route('/uploadPickle', methods=['POST'])
 def upload_pickle():
     
     if 'pickleFile' not in request.files:
-        print(1)
         return jsonify({'error': 'No pickle file uploaded'}), 404
 
     pickle_file = request.files['pickleFile']
@@ -137,7 +99,7 @@ def upload_pickle():
     try:
         # Connect to MongoDB
         inputs = json.loads(request.form.get('inputs'))
-        # client = MongoClient(MONGO_URI)
+        client = MongoClient(MONGO_URI)
         db = client[DATABASE_NAME]
         collection = db["models"]
         data = {
@@ -163,6 +125,7 @@ def upload_pickle():
 
 @app.route('/getModels', methods=['GET'])
 def get_models():
+      client = MongoClient(MONGO_URI)
       db = client[DATABASE_NAME]
       collection = db["models"]
       models = list(collection.find({}, {"modelName": 1, "time":1, "_id": 0}))
@@ -198,6 +161,7 @@ def get_models():
 
 
 def load_model(pickle_data):
+    
     return pickle.loads(pickle_data)
 
 @app.route('/getUserModelPrediction', methods=['GET'])
@@ -205,11 +169,11 @@ def get_user_model_prediction():
     modelName = request.args.get('modelName')
     print("Model Name:", modelName)
     try:
-        # client = MongoClient(MONGO_URI)
+        client = MongoClient(MONGO_URI)
         db = client[DATABASE_NAME]
         collection = db[COLLECTION]
         result = collection.find_one({'modelName': modelName})
-        if result:
+        if result:  
             pickle_data = result.get('pickleFile')
             model = load_model(pickle_data)
             inputs = result.get('inputs')
