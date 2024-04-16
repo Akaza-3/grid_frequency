@@ -44,21 +44,8 @@ function Navbar({ user }) {
               About us
             </Link>
           </li>
-          <li className="md:ml-8 text-xl md:my-0 my-7">
-            <Link className="text-white hover:text-gray-400" to="/pytopickle">
-              Convert file
-            </Link>
-          </li>
           {user ? (
             <>
-              <li className="md:ml-8 text-xl md:my-0 my-7">
-                <Link
-                  className="text-white hover:text-gray-400"
-                  to="/dashboard"
-                >
-                  Dashboard
-                </Link>
-              </li>
               <li
                 className="md:ml-8 text-xl md:my-0 my-7"
                 onClick={handleLogout}

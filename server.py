@@ -18,6 +18,7 @@ from bs4 import BeautifulSoup
 import re
 from io import BytesIO
 import sys
+from io import StringIO
 
 
 
@@ -42,16 +43,36 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 @app.route("/pytopickle", methods=["POST"])
 def convertFile():
-    if 'file' not in request.files:
-        print(" no file uploaded")
-    file  = request.files['file']
-    
-    pickled_model = process_file(file.read())
+
+    if 'modelFile' not in request.files or 'csvFiles' not in request.files:
+        return "Model file or CSV files not uploaded", 400
+
+    model_file = request.files['modelFile']
+    csv_files = request.files.getlist('csvFiles')
+
+    model_data = model_file.read()
+
+    script_dir = os.getcwd()  
+
+    #the files sent by user get stored locally so that they can be used by the process_file() function 
+    #for training the data and returning the model back to this function
+
+    csv_file_paths = []
+    for csv_file in csv_files:
+        if csv_file.filename.endswith('.csv'):
+            file_path = os.path.join(script_dir, csv_file.filename)
+            try:
+                csv_file.save(file_path)
+                csv_file_paths.append(file_path)
+            except Exception as e:
+                return f"Error saving CSV file: {str(e)}"
+
+    pickled_model = process_file(model_data)
 
     if pickled_model is not None:
         with open('itworked.pkl', 'wb') as f:
             pickle.dump(pickled_model, f)
-        return "success!"
+        return send_file('itworked.pkl', as_attachment=True)
     else:
         return "not success"
 
