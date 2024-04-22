@@ -155,8 +155,12 @@ const UserChart = () => {
                   gridlines: {
                     color: "transparent",
                   },
+                  viewWindow: {
+                    max: 700
+                  }
                 },
               }}
+              
             />
 
             <Chart
