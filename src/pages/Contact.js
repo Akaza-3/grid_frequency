@@ -2,7 +2,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub, faLinkedin} from '@fortawesome/free-brands-svg-icons'; // Import the GitHub icon
 
 import React from 'react'
-import { Link } from 'react-router-dom';
 
 const Contact = () => {
   return (

@@ -42,7 +42,6 @@ const UserChart = () => {
         // Calculating mean value and standard deviation
         const meanValue = calculateMean(sum);
         const standardDeviation = calculateDeviation(meanValue)
-
         // Update graph data
         setGraphData(prevData => [...prevData, [formattedTime, newData, meanValue, standardDeviation]]);
         
@@ -141,36 +140,36 @@ const UserChart = () => {
             }}
           />
           <Chart
-          className="pt-24"
-  chartType="Histogram"
-  data={histogramData}
-  options={{
-    backgroundColor: "#141514",
-    chartArea: {
-      width: "90%",
-      height: "70%"
-    },
-    colors: ["white"], 
-    legend: {
-      position: 'none' 
-    },
-    hAxis: {
-      textStyle: {
-        color: "white"
-      },
-      gridlines: {
-        color: "transparent" 
-      },
-    },
-    vAxis: {
-      textStyle: {
-        color: "white"
-      },
-      gridlines: {
-        color: "transparent" 
-      },
-    }
-  }}
+            className="pt-24"
+            chartType="Histogram"
+            data={histogramData}
+            options={{
+              backgroundColor: "#141514",
+              chartArea: {
+                width: "90%",
+                height: "70%"
+              },
+              colors: ["white"], 
+              legend: {
+                position: 'none' 
+              },
+              hAxis: {
+                textStyle: {
+                  color: "white"
+                },
+                gridlines: {
+                  color: "transparent" 
+                },
+              },
+              vAxis: {
+                textStyle: {
+                  color: "white"
+                },
+                gridlines: {
+                  color: "transparent" 
+                },
+              }
+            }}
 />
         </div>
         </div>

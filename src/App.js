@@ -7,13 +7,11 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Model from "./pages/models/Model";
-import Advertising from "./pages/models/Advertising";
-import LinearRegPred from "./pages/models/LinearRegPred";
 import PickleUploadForm from "./pages/models/uploadModels";
 import DisplayModels from "./pages/models/DisplayModels";
 import UserChart from "./components/chartUser";
 import Login from "./components/Login";
-import PyToPkl from "./pages/PyToPkl";
+import PyToPkl from "./pages/models/PyToPkl";
 // Initialize Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAEY1TAQJ9zMwWul1m7eDCWwQPgvPTKFUQ",
@@ -56,11 +54,6 @@ function App() {
         {user ? (
           <>
             <Route path="/models" element={<Model />} />
-            <Route path="/models/advertising" element={<Advertising />} />
-            <Route
-              path="/models/linearPrediction"
-              element={<LinearRegPred />}
-            />
             <Route path="/models/modelUpload" element={<PickleUploadForm />} />
             <Route path="/models/displayModels" element={<DisplayModels />} />
             <Route path="/models/addModels" element={<PickleUploadForm />} />

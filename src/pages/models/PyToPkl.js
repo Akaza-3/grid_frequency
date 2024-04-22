@@ -91,7 +91,7 @@ const PyToPkl = () => {
     return (
         <div className='flex flex-col md:flex-row min-h-screen bg-[#141514] text-white pt-24 md:pt-12 p-4'>
             <div className='w-full md:w-1/2 flex flex-col justify-center items-center'>
-                <h4 className='text-2xl text-center mb-4'>Keep the name of python model: <b>"MODEL"</b></h4>
+                <h4 className='text-2xl text-center mb-4'>Keep the name of python model: <b>"model"</b></h4>
                 <div className='items-center'>
                 <span>
                 <label>Select python file: </label>
@@ -99,7 +99,7 @@ const PyToPkl = () => {
                 </span>
                 <br/>
                 <span>
-                <label>Select csv files: </label>
+                <label>Select data files (typically in csv format): </label>
                 <input type="file" onChange={handleCsvFilesChange} multiple className='mb-2 pl-[20px]' accept=".csv" placeholder="Select CSV Files" />
                 </span>
                 <br/>
