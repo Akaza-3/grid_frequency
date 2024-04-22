@@ -19,6 +19,16 @@ const SquareCard = ({ name, time, link = null }) => {
 
   };
 
+  const handleModelName = (name) => {
+    const words = name.split(" ");
+    const capitalizedWords = words.map(word => {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+     });
+
+    const capitalizedModelName = capitalizedWords.join(" ");
+    return capitalizedModelName;
+  }
+
   return (
     <div className="flex items-center justify-center w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 px-2 py-4">
       {link === null ? <a href="/addModels " /> : ""}
@@ -28,7 +38,7 @@ const SquareCard = ({ name, time, link = null }) => {
       >
         <div className="h-20 p-4 relative">
           <h2 className="text-xl font-semibold text-gray-800 absolute top-2 left-2">
-            {name}
+            {handleModelName(name)}
           </h2>
           <p className="text-sm text-gray-600 absolute bottom-2 right-2">
             {formattedDate}

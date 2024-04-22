@@ -7,11 +7,11 @@ const UserChart = () => {
   const modelName = location.state.modelName;
   const [prediction, setPrediction] = useState(null);
   const [graphData, setGraphData] = useState([
-    ["Time", "Prediction", "Mean + a * SD", "Mean - a * SD"],
+    ["Time", "Prediction","Mean", "Mean + a * SD", "Mean - a * SD"],
   ]); // Initialize with header
   const [info, setInfo] = useState(null);
   const [dataHolder, setDataHolder] = useState([]);
-  const [histogramData, setHistogramData] = useState([["Prediction", "Value"]]);
+  const [histogramData, setHistogramData] = useState([["Prediction", "Prediction Count"]]);
   let sum = 0;
   let size = 1;
   const fetchUserModelPrediction = async () => {
@@ -49,14 +49,15 @@ const UserChart = () => {
         const standardDeviation = calculateDeviation(meanValue);
         // Update graph data
         setGraphData((prevData) => [
-          ...prevData,
-          [
-            formattedTime,
-            newData,
-            meanValue + 0.2 * standardDeviation,
-            meanValue - 0.2 * standardDeviation,
-          ],
-        ]);
+            ...prevData,
+            [
+              formattedTime, 
+              newData,
+              meanValue,
+              meanValue + 0.2 * standardDeviation,
+              meanValue - 0.2 * standardDeviation,
+            ],
+          ]);
 
         console.log(data);
       } else {
@@ -91,6 +92,17 @@ const UserChart = () => {
     return () => clearInterval(intervalId);
   }, [dataHolder]);
 
+
+  const handleModelName = (name) => {
+    const words = name.split(" ");
+    const capitalizedWords = words.map(word => {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+     });
+
+    const capitalizedModelName = capitalizedWords.join(" ");
+    return capitalizedModelName;
+  }
+
   return (
     <div className="pt-[80px] pl-3 bg-[#141514] text-white min-h-screen">
       {prediction === null && (
@@ -102,24 +114,24 @@ const UserChart = () => {
       <br />
 
       {prediction !== null && (
-        <div className="flex flex-row">
-          <div className="w-1/4 pr-5">
-            <h1 className="text-5xl font-bold">{modelName}</h1>
+        <div>
+          <div className="w-full pr-5 text-center justify-center">
+            <h1 className="text-5xl font-bold">{handleModelName(modelName)}</h1>
             <br />
             <br />
             <br />
             <p className="text-2xl">Parameters and their ranges</p>
             {info &&
               info.map((item, index) => (
-                <div key={index} className="flex flex-row">
+                <div key={index} className="flex flex-row text-center justify-center">
                   <h3 className="text-lg pr-2">{item.name} : </h3>
                   <p className="text-lg">{item.range.join(" - ")}</p>
                 </div>
               ))}
           </div>
-          <div className="w-3/4">
+          <div className="w-full">
             <Chart
-              className="h-1/2 pb-8 w-full"
+              className="h-[60vh] pb-8 w-full"
               chartType="LineChart"
               data={graphData}
               options={{
@@ -130,9 +142,9 @@ const UserChart = () => {
                 },
                 series: {
                   0: { color: "green" }, // Prediction line
-                  1: { color: "blue", type: "line" }, // Mean + 0.5 * SD line
-                  2: { color: "red", type: "line" }, // Mean - 0.5 * SD line
-                  3: { color: "lightblue", type: "area", areaOpacity: 0.3 }, // Shaded area
+                  1: { color: "blue", type: "line" }, // Mean + 0.2 * SD line
+                  2: { color: "red", type: "line" }, // Mean - 0.2 * SD line
+                  3: { color: "lightblue", type: "line"}, // Shaded area
                 },
                 legend: {
                   position: "bottom",
@@ -164,7 +176,7 @@ const UserChart = () => {
             />
 
             <Chart
-              className="pt-24"
+              className="pt-24 h-[60vh]"
               chartType="Histogram"
               data={histogramData}
               options={{
@@ -175,7 +187,10 @@ const UserChart = () => {
                 },
                 colors: ["white"],
                 legend: {
-                  position: "none",
+                  position: "bottom",
+                  textStyle: {
+                    color: "white",
+                  },
                 },
                 hAxis: {
                   textStyle: {

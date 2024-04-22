@@ -61,7 +61,7 @@ const PickleUploadForm = () => {
         onSubmit={handleSubmit}
         className="m-4 md:m-12 p-6 md:p-8 text-white max-w-lg w-full rounded-lg"
       >
-        <h2 className="pl-[80px] pb-8 text-lg">Do not have a pickle file? <Link to="/pytopickle" className="text-xl hover:text-red-600">Click here</Link></h2>
+        <h2 className="pl-[80px] pb-8 text-lg">To get graph directly from code? <Link to="/pytopickle" className="text-xl hover:text-red-600">Click here</Link></h2>
         <div className="mb-4">
           <span className="">
             <label htmlFor="modelName" className="block text-white mb-2">
