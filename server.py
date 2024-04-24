@@ -1,9 +1,8 @@
-import requests
 import json
 import pickle
 import time
 import os
-from flask import Flask, request, jsonify, send_file, Response
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import pandas as pd
 from datetime import datetime
@@ -19,7 +18,8 @@ import re
 from io import BytesIO
 import sys
 from io import StringIO
-
+import zipfile
+import shutil
 
 
 app = Flask(__name__)
@@ -43,40 +43,55 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 @app.route("/pytopickle", methods=["POST"])
 def convertFile():
-
-    if 'modelFile' not in request.files or 'csvFiles' not in request.files:
-        return "Model file or CSV files not uploaded", 400
-
+    print("convert file url hit")
+   
     model_file = request.files['modelFile']
-    csv_files = request.files.getlist('csvFiles')
-
+    files = request.files.getlist('files')
+    print("file received")
     model_data = model_file.read()
-
+    print(files)
     script_dir = os.getcwd()  
 
-    #the files sent by user get stored locally so that they can be used by the process_file() function 
+    #the files or folder sent by user get stored locally so that they can be used by the process_file() function 
     #for training the data and returning the model back to this function
+    print("file processing start")
+    saved_file_paths = []
 
-    csv_file_paths = []
-    for csv_file in csv_files:
-        if csv_file.filename.endswith('.csv'):
-            file_path = os.path.join(script_dir, csv_file.filename)
+    for file in files:
+        print("entered for loop")
+        if file.filename.endswith('.zip'):  # if a zip file, extract it and save it
+            print("tryin as zip file")
             try:
-                csv_file.save(file_path)
-                csv_file_paths.append(file_path)
+                zip_path = os.path.join(script_dir, file.filename)
+                file.save(zip_path)
+                with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                    zip_ref.extractall(script_dir)
+                    saved_file_paths.append(script_dir)
+                os.remove(zip_path)  # delete the zip after extraction
             except Exception as e:
-                return f"Error saving CSV file: {str(e)}"
+                return f"Error extracting and saving zip file {file.filename}: {str(e)}"
 
-    pickled_model = process_file(model_data)
+        else:  # if not a file save directly
+            print("trying as another file")
+            file_path = os.path.join(script_dir, file.filename)
+            try:
+                file.save(file_path)
+                saved_file_paths.append(file_path)
+            except Exception as e:
+                return f"Error saving file {file.filename}: {str(e)}"
 
-    if pickled_model is not None:
+
+    pickled_model = process_file(model_data, saved_file_paths)
+    print(saved_file_paths)
+    
+    if pickled_model is not None:   
         with open('itworked.pkl', 'wb') as f:
             pickle.dump(pickled_model, f)
         return send_file('itworked.pkl', as_attachment=True)
     else:
         return "not success"
 
-def process_file(data):
+def process_file(data, saved_file_paths):
     
     namespace = {}
     exec(data, namespace)
@@ -84,7 +99,6 @@ def process_file(data):
     # Assuming your model object is stored in a variable named 'model'
     model = namespace.get('model')
     print(model)
-
     return model
    
 

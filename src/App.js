@@ -12,6 +12,7 @@ import DisplayModels from "./pages/models/DisplayModels";
 import UserChart from "./components/chartUser";
 import Login from "./components/Login";
 import PyToPkl from "./pages/models/PyToPkl";
+import Chatbot from "./components/Chatbot"
 // Initialize Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAEY1TAQJ9zMwWul1m7eDCWwQPgvPTKFUQ",
@@ -47,6 +48,7 @@ function App() {
   return (
     <BrowserRouter>
       <Navbar user={user} handleLogout={handleLogout} />
+      <Chatbot/>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
