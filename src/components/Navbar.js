@@ -17,7 +17,7 @@ function Navbar({ user }) {
       <div className="md:flex items-center justify-between bg-[#0f0f0f] text-white py-4 md:px-10 px-7">
         <div className="font-bold text-2xl cursor-pointer items-center">
           <Link to="/">
-            <FontAwesomeIcon icon={faHome} className="mr-2" /> HOME
+            <FontAwesomeIcon icon={faHome} className="mr-2" />
           </Link>
         </div>
         <div

@@ -153,6 +153,10 @@ const UserChart = () => {
                   },
                 },
                 hAxis: {
+                  title: "Time",
+                  titleTextStyle: {
+                    color: 'white'
+                  },
                   textStyle: {
                     color: "white",
                   },
@@ -161,6 +165,10 @@ const UserChart = () => {
                   },
                 },
                 vAxis: {
+                  title: "Value",
+                  titleTextStyle: {
+                    color: 'white'
+                  },
                   textStyle: {
                     color: "white",
                   },
@@ -193,6 +201,10 @@ const UserChart = () => {
                   },
                 },
                 hAxis: {
+                  title: "Prediction",
+                  titleTextStyle: {
+                    color: 'white'
+                  },
                   textStyle: {
                     color: "white",
                   },
@@ -201,6 +213,10 @@ const UserChart = () => {
                   },
                 },
                 vAxis: {
+                  title: "Prediction Count",
+                  titleTextStyle: {
+                    color: 'white'
+                  },
                   textStyle: {
                     color: "white",
                   },

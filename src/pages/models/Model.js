@@ -1,5 +1,4 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 import ModelCard from '../../components/ModelCard'
 import {useNavigate} from 'react-router-dom'
 
@@ -16,7 +15,7 @@ const Model = () => {
   }
 
   return (
-    <div className='pt-24 text-white p-2 bg-[#141514] w-full h-screen flex'>
+    <div className='pt-24 text-white p-2 bg-[#141514] w-full h-screen flex flex-col items-center justify-center'>
     <ModelCard title={"Upload Models"} onClick={uploadModelHandler}/>
     <ModelCard title={"View Models"} onClick={viewModelHandler}/>
     </div>

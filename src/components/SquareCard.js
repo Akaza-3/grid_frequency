@@ -30,7 +30,7 @@ const SquareCard = ({ name, time, link = null }) => {
   }
 
   return (
-    <div className="flex items-center justify-center w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 px-2 py-4">
+    <div className="flex items-center justify-center w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 px-2 mx-4 py-4">
       {link === null ? <a href="/addModels " /> : ""}
       <div
         className="w-full bg-gray-200 rounded-lg shadow-md overflow-hidden relative cursor-pointer"
